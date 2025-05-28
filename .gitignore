@@ -23,24 +23,8 @@ var/
 .installed.cfg
 *.egg
 
-# Virtual Environment
 venv/
-ENV/
-env/
 
-# Database
 database/
 
-# IDE specific files
-.idea/
 .vscode/
-*.swp
-*.swo
-
-# OS specific files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs/

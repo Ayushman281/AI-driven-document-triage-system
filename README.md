@@ -48,7 +48,7 @@ A multi-agent AI system that accepts input in PDF, JSON, or Email format, classi
    
    Alternatively, you can run:
    ```
-   python run.py
+   python run_backend_args.py
    ```
    which provides command line arguments for host, port, and reload options.
 
@@ -61,7 +61,6 @@ A multi-agent AI system that accepts input in PDF, JSON, or Email format, classi
 3. Open your browser and navigate to `http://localhost:8501`
 
 ## Project Structure
-
 ```
 AI-driven document triage system/
 ├── backend/
@@ -84,6 +83,8 @@ AI-driven document triage system/
 ├── .gitignore
 ├── README.md
 └── requirements.txt
+├── run_backend.py
+└── run_backend_args.py
 ```
 
 ## How to Use
@@ -96,3 +97,4 @@ AI-driven document triage system/
 ## License
 
 [MIT License](LICENSE)
+
