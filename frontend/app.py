@@ -225,10 +225,8 @@ with tab2:
         # Ensure we're using the right field names that match the backend response
         document_id = classification.get("document_id") or classification.get("id")
         format_type = classification.get("format", "Unknown")
-        intent_type = classification.get("intent", "Unknown")
         
-        st.success(f"Document Format: **{format_type.upper()}**")
-        st.success(f"Intent: **{intent_type.title()}**")
+        # Only show format, removing the intent display
         st.info(f"Document ID: {document_id}")
         
         # Store document_id for later use
