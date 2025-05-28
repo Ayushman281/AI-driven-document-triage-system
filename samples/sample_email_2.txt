@@ -1,0 +1,27 @@
+From: support@cloudservices.com
+To: michael.wong@gmail.com
+Subject: RE: Ticket #45921 - Account Access Issue
+
+Hello Michael,
+
+Thank you for contacting Cloud Services Support. I understand you're experiencing difficulty accessing your account after the recent password reset.
+
+I've looked into your account and noticed that there were multiple unsuccessful login attempts before the system temporarily locked your account as a security measure. This is a standard security protocol to protect your data.
+
+I've reset the security lock on your account. Please follow these steps to regain access:
+
+1. Go to https://cloudservices.com/reset
+2. Enter your email address: michael.wong@gmail.com
+3. Click "Send reset link"
+4. Check your email for our message (check spam folder if needed)
+5. Follow the link in the email to create a new password
+
+For added security, please consider enabling two-factor authentication after logging in.
+
+If you continue to experience issues, please reply to this email or call our support line at 1-888-555-6789. Our team is available 24/7.
+
+Best regards,
+
+Sarah Johnson
+Customer Support Specialist
+Cloud Services Inc.
