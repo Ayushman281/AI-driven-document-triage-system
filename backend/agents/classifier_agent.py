@@ -1,6 +1,8 @@
 import json
 from typing import Dict, Any, Union
 import base64
+import logging
+from datetime import datetime
 
 # Try both import styles to support different ways of running the app
 try:
@@ -101,12 +103,36 @@ class ClassifierAgent(BaseAgent):
             "intent": document_intent
         }
     
-    async def process(self, content, intent, document_id=None):
+    async def process(self, content, intent=None, document_id=None):
         """
-        Process method required by BaseAgent
-        For Classifier, this just returns the classification
+        Process and classify a document
         """
-        if document_id is None:
-            document_id = self.generate_id()
-            
-        return await self.classify(content)
+        # Add debug logging to see what's happening
+        logging.debug(f"Classifying document: {document_id}")
+        
+        # Make sure classification results are being stored correctly
+        document_id = document_id or self.generate_id()
+        
+        # Determine format
+        format_type = await self._determine_format(content)
+        logging.debug(f"Determined format: {format_type}")
+        
+        # Determine intent if not provided
+        if not intent:
+            intent = await self._determine_intent(content, format_type)
+            logging.debug(f"Determined intent: {intent}")
+        
+        # Ensure the result is stored in the database
+        await self.memory_store.store_document({
+            "id": document_id,
+            "format": format_type,
+            "intent": intent,
+            "content": content,
+            "processed_at": datetime.now().isoformat()
+        })
+        
+        return {
+            "id": document_id,
+            "format": format_type, 
+            "intent": intent
+        }

@@ -1,0 +1,31 @@
+{
+  "customer_id": "CUS-29384",
+  "account_details": {
+    "type": "Premium",
+    "opened_date": "2020-05-12",
+    "status": "Active"
+  },
+  "usage_statistics": {
+    "monthly_logins": 28,
+    "average_session_time": "24min",
+    "preferred_features": ["budgeting", "investments", "bill_pay"]
+  },
+  "support_history": [
+    {
+      "ticket_id": "TKT-2398",
+      "date": "2023-01-15",
+      "issue": "Password reset",
+      "resolution": "Completed via phone verification"
+    },
+    {
+      "ticket_id": "TKT-3042",
+      "date": "2023-03-22",
+      "issue": "Mobile app sync issue",
+      "resolution": "Fixed in version 2.4.1"
+    }
+  ],
+  "personalization_settings": {
+    "notification_preferences": "email",
+    "dashboard_modules": ["spending_analysis", "goals", "investment_summary"]
+  }
+}

@@ -63,7 +63,11 @@ def classify_document(file=None, email_content=None, json_content=None):
             return None
             
         if response.status_code == 200:
-            return response.json()
+            result = response.json()
+            # Add debug info
+            if st.session_state.debug_mode:
+                st.write("Classification API response:", result)
+            return result
         else:
             st.error(f"Classification error: {response.text}")
             return None
@@ -213,11 +217,22 @@ with tab2:
     
     if st.session_state.classification:
         classification = st.session_state.classification
-        document_id = classification.get("document_id")
         
-        st.success(f"Document Format: **{classification.get('format', 'Unknown').upper()}**")
-        st.success(f"Intent: **{classification.get('intent', 'Unknown').title()}**")
+        # Debug: Print out the full classification response
+        if st.session_state.debug_mode:
+            st.expander("Classification Response Debug").json(classification)
+        
+        # Ensure we're using the right field names that match the backend response
+        document_id = classification.get("document_id") or classification.get("id")
+        format_type = classification.get("format", "Unknown")
+        intent_type = classification.get("intent", "Unknown")
+        
+        st.success(f"Document Format: **{format_type.upper()}**")
+        st.success(f"Intent: **{intent_type.title()}**")
         st.info(f"Document ID: {document_id}")
+        
+        # Store document_id for later use
+        st.session_state.document_id = document_id
         
         if st.button("⚙️ Process Document"):
             with st.spinner("Processing document..."):
@@ -238,10 +253,19 @@ with tab3:
     if st.session_state.processed_result:
         result = st.session_state.processed_result
         
+        # Debug view of the full response
+        if st.session_state.debug_mode:
+            st.expander("Process Response Debug").json(result)
+        
         st.subheader("Document Information")
-        st.write(f"**Format:** {result.get('format', 'Unknown').upper()}")
-        st.write(f"**Intent:** {result.get('intent', 'Unknown').title()}")
-        st.write(f"**Document ID:** {result.get('document_id', 'N/A')}")
+        # Be flexible with field access - try multiple possible paths
+        format_type = result.get("format", result.get("processing_result", {}).get("format", "Unknown"))
+        intent_type = result.get("intent", result.get("processing_result", {}).get("intent", "Unknown"))
+        doc_id = result.get("document_id", result.get("id", "N/A"))
+        
+        st.write(f"**Format:** {format_type.upper()}")
+        st.write(f"**Intent:** {intent_type.title()}")
+        st.write(f"**Document ID:** {doc_id}")
         
         st.subheader("Extracted Data")
         extracted_data = result.get("processing_result", {}).get("extracted_data", {})

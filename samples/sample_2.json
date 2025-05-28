@@ -1,0 +1,49 @@
+{
+  "project_id": "PRJ-10456",
+  "title": "Urban Infrastructure Modernization",
+  "status": "In Progress",
+  "timeline": {
+    "start_date": "2023-02-01",
+    "projected_end_date": "2024-08-30",
+    "current_phase": "Design Review"
+  },
+  "budget": {
+    "total_allocated": 2450000,
+    "spent_to_date": 876500,
+    "remaining": 1573500
+  },
+  "stakeholders": [
+    {
+      "organization": "City Planning Department",
+      "role": "Project Oversight",
+      "contact_person": "Director of Urban Development"
+    },
+    {
+      "organization": "Community Association",
+      "role": "Public Consultation",
+      "contact_person": "Association President"
+    },
+    {
+      "organization": "Engineering Consultancy",
+      "role": "Technical Implementation",
+      "contact_person": "Lead Civil Engineer"
+    }
+  ],
+  "milestones": [
+    {
+      "name": "Requirements Gathering",
+      "status": "Completed",
+      "completion_date": "2023-04-15"
+    },
+    {
+      "name": "Initial Design",
+      "status": "Completed",
+      "completion_date": "2023-07-22"
+    },
+    {
+      "name": "Stakeholder Review",
+      "status": "In Progress",
+      "target_date": "2023-09-30"
+    }
+  ]
+}
