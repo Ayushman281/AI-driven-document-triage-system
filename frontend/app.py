@@ -226,7 +226,8 @@ with tab2:
         document_id = classification.get("document_id") or classification.get("id")
         format_type = classification.get("format", "Unknown")
         
-        # Only show format, removing the intent display
+        # Display document format - make it more visible with success style
+        st.success(f"Document Format: **{format_type.upper() if format_type else 'UNKNOWN'}**")
         st.info(f"Document ID: {document_id}")
         
         # Store document_id for later use

@@ -31,6 +31,19 @@ class ClassifierAgent(BaseAgent):
         Returns:
             Dict with format, intent and document ID
         """
+        # Enhanced content type detection 
+        if content_type == "pdf" or (isinstance(content_type, str) and "pdf" in content_type.lower()):
+            # Content is PDF
+            format_hint = "pdf"
+        elif content_type == "json" or (isinstance(content_type, str) and "json" in content_type.lower()):
+            # Content is JSON
+            format_hint = "json"
+        elif content_type == "email" or (isinstance(content_type, str) and "email" in content_type.lower()):
+            # Content is email
+            format_hint = "email"
+        else:
+            format_hint = None
+        
         # Prepare content for classification
         if content_type == "pdf" and isinstance(content, str):
             # Content is base64-encoded PDF
@@ -73,7 +86,8 @@ class ClassifierAgent(BaseAgent):
             elif "pdf" in response.lower():
                 document_format = "pdf"
             else:
-                document_format = "unknown"
+                # Use the format hint if available, otherwise unknown
+                document_format = format_hint or "unknown"
                 
             if "invoice" in response.lower():
                 document_intent = "invoice"
@@ -86,16 +100,24 @@ class ClassifierAgent(BaseAgent):
             else:
                 document_intent = "unknown"
         
+        # Override the detected format if we have a strong hint
+        if format_hint and (document_format == "unknown" or document_format == ""):
+            document_format = format_hint
+            logging.info(f"Using format hint: {format_hint} instead of detected format")
+        
         # Generate document ID and store in memory
         document_id = self.generate_id()
         
-        # Store document information
+        # Store document information - normalize the format to lowercase
         self.memory_store.store_document(
             document_id=document_id,
-            format=document_format,
-            intent=document_intent,
+            format=document_format.lower(),
+            intent=document_intent.lower(),
             content=content
         )
+        
+        # Log the decision for debugging
+        logging.info(f"Document {document_id} classified as: format='{document_format}', intent='{document_intent}'")
         
         return {
             "document_id": document_id,

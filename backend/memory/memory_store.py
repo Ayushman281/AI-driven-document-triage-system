@@ -4,6 +4,7 @@ from typing import Dict, Any, List, Union
 import datetime
 import sys
 import os
+import base64
 
 # Fix imports to work in all scenarios
 try:
@@ -34,13 +35,25 @@ class MemoryStore:
         conn = get_db_connection()
         cursor = conn.cursor()
         
+        # Normalize format (lowercase)
+        format = format.lower() if format else "unknown"
+        intent = intent.lower() if intent else "general"
+        
+        # Enhanced logging for debugging
+        print(f"Storing document: {document_id} with format: {format}, intent: {intent}")
+        
         # Serialize content if it's not a string
         if isinstance(content, dict):
             serialized_content = json.dumps(content)
         elif isinstance(content, bytes):
-            serialized_content = "BINARY_CONTENT"  # We don't store binary in SQLite
+            # For PDF files, we'll store the base64 encoded content
+            serialized_content = base64.b64encode(content).decode('utf-8')
+            # If the content is very large, store a placeholder instead
+            if len(serialized_content) > 1000000:  # 1MB limit
+                serialized_content = "BINARY_CONTENT"  # We don't store large binary in SQLite
         else:
-            serialized_content = content[:10000]  # Limit storage size
+            # For string content, limit the size
+            serialized_content = str(content)[:100000] if content else ""  # Truncate large content
         
         cursor.execute(
             'INSERT INTO documents (id, format, intent, timestamp, content) VALUES (?, ?, ?, ?, ?)',

@@ -3,7 +3,6 @@ from typing import Dict, Any
 import jsonschema
 from jsonschema import ValidationError
 
-# Try both import styles to support different ways of running the app
 try:
     from backend.agents.base_agent import BaseAgent
     from backend.memory.memory_store import MemoryStore
