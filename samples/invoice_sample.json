@@ -1,0 +1,31 @@
+{
+  "invoice_number": "INV-2023-0042",
+  "issue_date": "2023-11-15",
+  "due_date": "2023-12-15",
+  "vendor": "Tech Supplies Inc.",
+  "customer": "AI Research Group",
+  "items": [
+    {
+      "description": "High-Performance GPU",
+      "quantity": 2,
+      "unit_price": 1200.00,
+      "amount": 2400.00
+    },
+    {
+      "description": "32GB DDR4 RAM",
+      "quantity": 4,
+      "unit_price": 150.00,
+      "amount": 600.00
+    },
+    {
+      "description": "1TB SSD Storage",
+      "quantity": 2,
+      "unit_price": 120.00,
+      "amount": 240.00
+    }
+  ],
+  "total_amount": 3240.00,
+  "currency": "USD",
+  "payment_terms": "Net 30",
+  "notes": "Thank you for your business!"
+}
