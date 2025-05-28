@@ -9,6 +9,7 @@ A multi-agent AI system that accepts input in PDF, JSON, or Email format, classi
   - Classifier Agent: Determines document format and intent
   - JSON Agent: Processes structured JSON documents
   - Email Agent: Extracts information from emails
+  - PDF Agent: Extracts text and information from PDF documents
 - **Shared Memory**: Maintains context across agents
 - **User-friendly UI**: Built with Streamlit
 
@@ -42,9 +43,14 @@ A multi-agent AI system that accepts input in PDF, JSON, or Email format, classi
 
 1. Start the backend server:
    ```
-   cd backend
-   uvicorn main:app --reload
+   python run_backend.py
    ```
+   
+   Alternatively, you can run:
+   ```
+   python run.py
+   ```
+   which provides command line arguments for host, port, and reload options.
 
 2. In a new terminal, start the Streamlit frontend:
    ```
