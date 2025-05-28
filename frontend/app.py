@@ -270,17 +270,63 @@ with tab3:
         extracted_data = result.get("processing_result", {}).get("extracted_data", {})
         
         if extracted_data:
-            # Create a formatted display of extracted data
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                for key, value in list(extracted_data.items())[:len(extracted_data)//2 + 1]:
-                    st.write(f"**{key.replace('_', ' ').title()}:** {value}")
-            
-            with col2:
-                for key, value in list(extracted_data.items())[len(extracted_data)//2 + 1:]:
-                    st.write(f"**{key.replace('_', ' ').title()}:** {value}")
+            # Handle different formats differently
+            if format_type.lower() == "pdf":
+                # Create sections based on PDF content type
+                if "agreement_title" in extracted_data or "key_terms" in extracted_data or "parties_involved" in extracted_data:
+                    st.markdown("#### 📄 Agreement Details")
+                    for key in ["agreement_title", "parties_involved", "effective_date", "termination_date"]:
+                        if key in extracted_data:
+                            st.write(f"**{key.replace('_', ' ').title()}:** {extracted_data[key]}")
                     
+                    if "key_terms" in extracted_data:
+                        st.markdown("#### 📋 Key Terms")
+                        st.write(extracted_data["key_terms"])
+                    
+                    if "contains_signatures" in extracted_data:
+                        signature_status = "✅ Yes" if extracted_data["contains_signatures"] == "yes" else "❌ No"
+                        st.write(f"**Contains Signatures:** {signature_status}")
+                
+                # For other PDF types, show fields in organized sections
+                elif "title" in extracted_data or "authors" in extracted_data:
+                    st.markdown("#### 📊 Document Information")
+                    for key in ["title", "authors", "date"]:
+                        if key in extracted_data:
+                            st.write(f"**{key.replace('_', ' ').title()}:** {extracted_data[key]}")
+                    
+                    if "key_findings" in extracted_data:
+                        st.markdown("#### 🔍 Key Findings")
+                        st.write(extracted_data["key_findings"])
+                
+                # Default PDF display
+                else:
+                    # Create a formatted display of extracted data in two columns
+                    col1, col2 = st.columns(2)
+                    
+                    keys = list(extracted_data.keys())
+                    mid_point = len(keys) // 2 + 1
+                    
+                    with col1:
+                        for key in keys[:mid_point]:
+                            if key != "raw_extraction" and key != "metadata":
+                                st.write(f"**{key.replace('_', ' ').title()}:** {extracted_data[key]}")
+                    
+                    with col2:
+                        for key in keys[mid_point:]:
+                            if key != "raw_extraction" and key != "metadata":
+                                st.write(f"**{key.replace('_', ' ').title()}:** {extracted_data[key]}")
+            else:
+                # For non-PDF formats, use the original display format
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    for key, value in list(extracted_data.items())[:len(extracted_data)//2 + 1]:
+                        st.write(f"**{key.replace('_', ' ').title()}:** {value}")
+                
+                with col2:
+                    for key, value in list(extracted_data.items())[len(extracted_data)//2 + 1:]:
+                        st.write(f"**{key.replace('_', ' ').title()}:** {value}")
+            
             # Show JSON representation
             with st.expander("View as JSON"):
                 st.json(extracted_data)

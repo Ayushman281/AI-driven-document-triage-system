@@ -67,7 +67,7 @@ class ClassifierAgent(BaseAgent):
         
         # Classify using LLM
         messages = [
-            {"role": "system", "content": "You are a document classification AI. Your task is to analyze the document and determine its format (PDF, JSON, Email) and its intent (Invoice, RFQ, Complaint, Regulation, etc.)."},
+            {"role": "system", "content": "You are a document classification AI. Your task is to analyze the document and determine its format (PDF, JSON, Email) and its intent. For agreements, specify the type (Software Licensing, Service Agreement, NDA, etc)."},
             {"role": "user", "content": f"Classify the document format and intent from the following content snippet:\n\n{processed_content}\n\nRespond in JSON format with 'format' and 'intent' fields only."}
         ]
         
@@ -104,6 +104,11 @@ class ClassifierAgent(BaseAgent):
         if format_hint and (document_format == "unknown" or document_format == ""):
             document_format = format_hint
             logging.info(f"Using format hint: {format_hint} instead of detected format")
+        
+        # For PDF files uploaded through file upload, explicitly set format to PDF
+        if content_type == "pdf" or (isinstance(content_type, str) and "pdf" in content_type.lower()):
+            document_format = "pdf"
+            logging.info("Explicitly setting format to PDF based on content_type")
         
         # Generate document ID and store in memory
         document_id = self.generate_id()

@@ -74,6 +74,7 @@ async def classify_document(
                 content_type = 'pdf'
                 content_base64 = base64.b64encode(content).decode('utf-8')
                 content = content_base64
+                logging.info(f"Processing PDF file: {filename}")
             elif file_extension == 'json':
                 content_type = 'json'
                 content = json.loads(content.decode('utf-8'))
@@ -91,10 +92,12 @@ async def classify_document(
         # Call classifier agent
         classification = await classifier_agent.classify(content, content_type)
         
-        return {
-            "classification": classification,
-            "document_id": classification.get("document_id")
-        }
+        # For PDF uploads, make sure format is correctly set
+        if content_type == 'pdf' and classification.get("format") != "pdf":
+            classification["format"] = "pdf"
+            logging.info("Correcting format to PDF based on uploaded file extension")
+        
+        return classification
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Classification error: {str(e)}")
 

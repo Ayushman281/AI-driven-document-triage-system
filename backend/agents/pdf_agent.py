@@ -109,3 +109,70 @@ class PDFAgent(BaseAgent):
                 "status": "error", 
                 "message": f"Unexpected error processing PDF: {str(e)}"
             }
+    
+    async def _extract_fields_by_intent(self, text_content: str, intent: str) -> Dict[str, Any]:
+        """
+        Extract fields from PDF content based on intent
+        
+        Args:
+            text_content: Extracted text from PDF
+            intent: Document intent (invoice, rfq, etc.)
+            
+        Returns:
+            Dict of extracted fields
+        """
+        # Trim content to fit in LLM context
+        trimmed_content = text_content[:4000]  # Use more context for PDFs
+        
+        # Define extraction prompts based on intent
+        if intent == "invoice":
+            system_prompt = "You are an AI specialized in extracting information from invoice PDFs. Extract the invoice number, amount, due date, vendor, customer, and line items if available."
+            field_list = "invoice_number, total_amount, due_date, vendor, customer, items"
+        elif intent == "rfq" or intent == "request for quote":
+            system_prompt = "You are an AI specialized in extracting information from Request for Quote (RFQ) PDFs. Extract the items requested, quantities, desired delivery date, and any specific requirements."
+            field_list = "rfq_number, items_requested, quantities, delivery_date, specific_requirements"
+        elif "agreement" in intent.lower() or "contract" in intent.lower() or "license" in intent.lower():
+            system_prompt = "You are an AI specialized in extracting information from legal agreements and contracts. Extract the agreement title, parties involved, effective date, termination date, key terms, and identify if signatures are present."
+            field_list = "agreement_title, parties_involved, effective_date, termination_date, key_terms, contains_signatures"
+        elif "report" in intent.lower() or "research" in intent.lower():
+            system_prompt = "You are an AI specialized in extracting information from research reports. Extract the title, authors, date, key findings, methodology, and conclusions."
+            field_list = "title, authors, date, key_findings, methodology, conclusions"
+        else:
+            system_prompt = f"You are an AI specialized in extracting key information from {intent} documents. Extract all significant fields and data points appropriate for this document type."
+            field_list = "document_title, date, author, primary_topics, key_points, document_summary"
+        
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": f"Extract the following fields from this {intent} document: {field_list}. Respond with only a JSON object with these fields.\n\nDOCUMENT CONTENT:\n{trimmed_content}"}
+        ]
+        
+        try:
+            response = await self.query_llm(messages)
+            
+            # Try to parse as JSON
+            extracted_data = json.loads(response)
+            return extracted_data
+        except json.JSONDecodeError:
+            # If LLM doesn't return valid JSON, attempt to extract from the response
+            logging.warning(f"Failed to parse LLM response as JSON: {response[:100]}...")
+            
+            # Make a second attempt with a stronger instruction
+            messages = [
+                {"role": "system", "content": "You are an AI that extracts structured information from documents and outputs ONLY valid JSON. No explanations or extra text."},
+                {"role": "user", "content": f"Extract key information from this {intent} document and return ONLY a JSON object. Fields to include: {field_list}.\n\nDOCUMENT CONTENT:\n{trimmed_content[:2000]}"}
+            ]
+            
+            try:
+                response = await self.query_llm(messages)
+                # Find JSON in the response by looking for opening brace
+                json_start = response.find('{')
+                json_end = response.rfind('}') + 1
+                if json_start >= 0 and json_end > json_start:
+                    json_str = response[json_start:json_end]
+                    return json.loads(json_str)
+                return {"raw_extraction": response[:1000], "document_type": intent}
+            except:
+                return {"raw_extraction": response[:1000], "document_type": intent}
+        except Exception as e:
+            logging.exception("Error in LLM extraction")
+            return {"error": str(e), "document_type": intent}
